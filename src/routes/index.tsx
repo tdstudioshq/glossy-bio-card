@@ -26,11 +26,11 @@ type LinkItem = {
 };
 
 const links: LinkItem[] = [
-  { label: "Instagram", href: "#", icon: Instagram },
-  { label: "WhatsApp", href: "#", icon: MessageCircle },
-  { label: "Telegram", href: "#", icon: Send },
-  { label: "Email", href: "#", icon: Mail },
-  { label: "PREMADE DESIGNS", href: "#", icon: Sparkles },
+  { label: "Instagram", href: "https://www.instagram.com/tdstudiosco/", icon: Instagram },
+  { label: "WhatsApp", href: "https://wa.me/19297528373", icon: MessageCircle },
+  { label: "Telegram", href: "https://t.me/+19297528373", icon: Send },
+  { label: "Email", href: "mailto:tyler@tdstudiosny.com", icon: Mail },
+  { label: "PREMADE DESIGNS", href: "/gallery", icon: Sparkles },
 ];
 
 function Index() {
