@@ -26,11 +26,11 @@ type LinkItem = {
 };
 
 const links: LinkItem[] = [
-  { label: "Instagram", href: "#", icon: Instagram },
-  { label: "WhatsApp", href: "#", icon: MessageCircle },
-  { label: "Telegram", href: "#", icon: Send },
-  { label: "Email", href: "#", icon: Mail },
-  { label: "PREMADE DESIGNS", href: "#", icon: Sparkles },
+  { label: "Instagram", href: "https://www.instagram.com/tdstudiosco/", icon: Instagram },
+  { label: "WhatsApp", href: "https://wa.me/19297528373", icon: MessageCircle },
+  { label: "Telegram", href: "https://t.me/+19297528373", icon: Send },
+  { label: "Email", href: "mailto:tyler@tdstudiosny.com", icon: Mail },
+  { label: "PREMADE DESIGNS", href: "/gallery", icon: Sparkles },
 ];
 
 function Index() {
@@ -66,18 +66,23 @@ function Index() {
           <img
             src={logo}
             alt="TD Studios — TNT Printing, New York City"
-            className="h-32 w-32 sm:h-36 sm:w-36 object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
+            className="animate-spin-slow h-32 w-32 sm:h-36 sm:w-36 object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
           />
         </div>
 
-        {/* Spacer / tagline */}
+        {/* Handle */}
         <div
           className="animate-fade-up mt-5 mb-8 text-center"
           style={{ animationDelay: "450ms" }}
         >
-          <h1 className="font-display text-3xl sm:text-4xl text-foreground">
-            TD STUDIOS
-          </h1>
+          <a
+            href="https://www.instagram.com/tdstudiosco/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-display inline-block text-3xl sm:text-4xl text-foreground tracking-[0.08em] transition-colors hover:text-foreground/70"
+          >
+            @TDSTUDIOSCO
+          </a>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground tracking-[0.25em] uppercase">
             New York City
           </p>
