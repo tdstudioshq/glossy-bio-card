@@ -29,14 +29,18 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "TD STUDIOS" },
+      { name: "description", content: "WELCOME TO TD STUDIOS" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "TD STUDIOS" },
+      { property: "og:description", content: "WELCOME TO TD STUDIOS" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "TD STUDIOS" },
+      { name: "twitter:description", content: "WELCOME TO TD STUDIOS" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/TNZN6Inz9kYLC9FOtmD6iFp7par2/social-images/social-1776451633933-td-studios-logo.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/TNZN6Inz9kYLC9FOtmD6iFp7par2/social-images/social-1776451633933-td-studios-logo.webp" },
     ],
     links: [
       {
