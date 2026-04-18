@@ -108,7 +108,7 @@ function Inquiries() {
                 rows={4}
                 maxLength={2000}
                 className="w-full rounded-xl bg-white/5 border border-white/15 px-4 py-3 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-white/35 focus:bg-white/[0.07] transition-colors resize-none"
-                placeholder="Tell us about your project..."
+                placeholder="Please provide details about the designs you're inquiring about"
               />
             </div>
 
