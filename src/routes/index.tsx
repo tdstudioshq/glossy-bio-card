@@ -30,7 +30,7 @@ const links: LinkItem[] = [
   { label: "WhatsApp", href: "https://wa.me/19297528373", icon: MessageCircle },
   { label: "Telegram", href: "https://t.me/+19297528373", icon: Send },
   { label: "Email", href: "mailto:tyler@tdstudiosny.com", icon: Mail },
-  { label: "PREMADE DESIGNS", href: "/gallery", icon: Sparkles },
+  { label: "DESIGN INQUIRIES", href: "/inquiries", icon: Sparkles },
 ];
 
 function Index() {
