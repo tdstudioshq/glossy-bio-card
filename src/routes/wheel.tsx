@@ -33,6 +33,28 @@ function WheelPage() {
   const [spinning, setSpinning] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const wheelWrapRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState(320);
+
+  // Responsive wheel sizing based on container/viewport
+  useEffect(() => {
+    const compute = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      // Fit within viewport with padding; cap at 480
+      const maxByWidth = Math.min(vw - 40, 480);
+      const maxByHeight = vh - 260; // leave room for header + button
+      const next = Math.max(260, Math.min(maxByWidth, maxByHeight, 480));
+      setSize(Math.floor(next));
+    };
+    compute();
+    window.addEventListener("resize", compute);
+    window.addEventListener("orientationchange", compute);
+    return () => {
+      window.removeEventListener("resize", compute);
+      window.removeEventListener("orientationchange", compute);
+    };
+  }, []);
 
   // Load from localStorage
   useEffect(() => {
@@ -63,7 +85,6 @@ function WheelPage() {
     if (!ctx) return;
 
     const dpr = window.devicePixelRatio || 1;
-    const size = 480;
     canvas.width = size * dpr;
     canvas.height = size * dpr;
     canvas.style.width = `${size}px`;
@@ -104,13 +125,14 @@ function WheelPage() {
       ctx.textAlign = "right";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#fff";
-      ctx.font = "700 16px ui-sans-serif, system-ui, sans-serif";
+      const fontSize = Math.max(10, Math.round(size * 0.034));
+      ctx.font = `700 ${fontSize}px ui-sans-serif, system-ui, sans-serif`;
       ctx.shadowColor = "rgba(0,0,0,0.7)";
       ctx.shadowBlur = 6;
       const label = names[i] || "";
-      const maxLen = 18;
+      const maxLen = size < 360 ? 12 : size < 440 ? 15 : 18;
       const text = label.length > maxLen ? label.slice(0, maxLen - 1) + "…" : label;
-      ctx.fillText(text, radius - 18, 0);
+      ctx.fillText(text, radius - Math.max(10, size * 0.035), 0);
       ctx.restore();
     }
 
@@ -156,7 +178,7 @@ function WheelPage() {
     ctx.arc(cx, cy, 8, 0, Math.PI * 2);
     ctx.fillStyle = "#0f172a";
     ctx.fill();
-  }, [names]);
+  }, [names, size]);
 
   // Helper to lighten/darken hex colors
   function shade(hex: string, percent: number): string {
@@ -203,12 +225,11 @@ function WheelPage() {
 
   return (
     <main
-      className="relative min-h-screen w-full px-5 py-10 sm:px-8 sm:py-14"
+      className="relative min-h-screen w-full px-4 py-6 sm:px-8 sm:py-14"
       style={{
         backgroundImage: `url(${casinoBg})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundAttachment: "fixed",
       }}
     >
       {/* Dark overlay for legibility */}
@@ -222,29 +243,33 @@ function WheelPage() {
         }}
       />
       <div className="relative z-10 mx-auto max-w-5xl">
-        <header className="mb-8 flex flex-col items-center text-center">
+        <header className="mb-6 sm:mb-8 flex flex-col items-center text-center">
           <Link
             to="/"
             className="mb-4 text-[11px] tracking-[0.3em] uppercase text-muted-foreground hover:text-foreground transition-colors"
           >
             ← Back
           </Link>
-          <h1 className="font-display text-5xl sm:text-6xl text-foreground">Spin The Wheel</h1>
-          <p className="mt-2 text-sm text-muted-foreground tracking-wide">
+          <h1 className="font-display text-4xl sm:text-6xl text-foreground">Spin The Wheel</h1>
+          <p className="mt-2 text-xs sm:text-sm text-muted-foreground tracking-wide px-2">
             Add Instagram handles, then spin to pick a winner.
           </p>
         </header>
 
-        <div className="grid gap-8 lg:grid-cols-[480px_1fr] lg:items-start justify-items-center">
+        <div className="grid gap-6 sm:gap-8 lg:grid-cols-[480px_1fr] lg:items-start justify-items-center">
           {/* Wheel */}
-          <div className="relative" style={{ width: 480, height: 520 }}>
+          <div
+            ref={wheelWrapRef}
+            className="relative mx-auto"
+            style={{ width: size, height: size + 40 }}
+          >
             {/* Rim glow */}
             <div
               aria-hidden
               className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
               style={{
-                width: 540,
-                height: 540,
+                width: size + 60,
+                height: size + 60,
                 marginTop: 10,
                 background:
                   "radial-gradient(circle, rgba(245,158,11,0.45) 0%, rgba(245,158,11,0.15) 40%, transparent 70%)",
@@ -261,9 +286,9 @@ function WheelPage() {
                 style={{
                   width: 0,
                   height: 0,
-                  borderLeft: "20px solid transparent",
-                  borderRight: "20px solid transparent",
-                  borderTop: "34px solid #fde68a",
+                  borderLeft: `${Math.max(14, size * 0.04)}px solid transparent`,
+                  borderRight: `${Math.max(14, size * 0.04)}px solid transparent`,
+                  borderTop: `${Math.max(24, size * 0.07)}px solid #fde68a`,
                   filter:
                     "drop-shadow(0 0 12px rgba(245,158,11,0.9)) drop-shadow(0 4px 6px rgba(0,0,0,0.6))",
                 }}
@@ -272,8 +297,8 @@ function WheelPage() {
             <div
               className="relative"
               style={{
-                width: 480,
-                height: 480,
+                width: size,
+                height: size,
                 marginTop: 20,
                 transform: `rotate(${rotation}deg)`,
                 transition: spinning
@@ -290,7 +315,7 @@ function WheelPage() {
 
           {/* Controls */}
           <div
-            className="glass-card w-full max-w-md rounded-2xl p-6"
+            className="glass-card w-full max-w-md rounded-2xl p-4 sm:p-6"
             style={{ backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
           >
             <button
