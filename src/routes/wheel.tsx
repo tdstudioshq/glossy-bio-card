@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import casinoBg from "@/assets/casino-bg.png";
 
 export const Route = createFileRoute("/wheel")({
   head: () => ({
@@ -20,9 +21,9 @@ const STORAGE_KEY = "td-wheel-names";
 const DEFAULT_NAMES = ["@friend1", "@friend2", "@friend3", "@friend4", "@friend5", "@friend6"];
 
 const PALETTE = [
-  "#ef4444", "#f97316", "#eab308", "#22c55e",
-  "#06b6d4", "#3b82f6", "#8b5cf6", "#ec4899",
-  "#14b8a6", "#f59e0b", "#a855f7", "#10b981",
+  "#e11d48", "#f59e0b", "#fbbf24", "#16a34a",
+  "#0891b2", "#2563eb", "#7c3aed", "#db2777",
+  "#0d9488", "#ea580c", "#9333ea", "#059669",
 ];
 
 function WheelPage() {
@@ -71,7 +72,7 @@ function WheelPage() {
 
     const cx = size / 2;
     const cy = size / 2;
-    const radius = size / 2 - 6;
+    const radius = size / 2 - 8;
     const n = Math.max(names.length, 1);
     const arc = (2 * Math.PI) / n;
 
@@ -80,14 +81,20 @@ function WheelPage() {
     for (let i = 0; i < n; i++) {
       const start = i * arc - Math.PI / 2;
       const end = start + arc;
+      const baseColor = PALETTE[i % PALETTE.length];
+      // Radial gradient for depth
+      const grad = ctx.createRadialGradient(cx, cy, radius * 0.15, cx, cy, radius);
+      grad.addColorStop(0, shade(baseColor, 0.25));
+      grad.addColorStop(0.7, baseColor);
+      grad.addColorStop(1, shade(baseColor, -0.35));
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.arc(cx, cy, radius, start, end);
       ctx.closePath();
-      ctx.fillStyle = PALETTE[i % PALETTE.length];
+      ctx.fillStyle = grad;
       ctx.fill();
-      ctx.strokeStyle = "rgba(255,255,255,0.25)";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(255,255,255,0.35)";
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
       // Label
@@ -97,25 +104,70 @@ function WheelPage() {
       ctx.textAlign = "right";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#fff";
-      ctx.font = "600 16px ui-sans-serif, system-ui, sans-serif";
-      ctx.shadowColor = "rgba(0,0,0,0.5)";
-      ctx.shadowBlur = 4;
+      ctx.font = "700 16px ui-sans-serif, system-ui, sans-serif";
+      ctx.shadowColor = "rgba(0,0,0,0.7)";
+      ctx.shadowBlur = 6;
       const label = names[i] || "";
       const maxLen = 18;
       const text = label.length > maxLen ? label.slice(0, maxLen - 1) + "…" : label;
-      ctx.fillText(text, radius - 14, 0);
+      ctx.fillText(text, radius - 18, 0);
       ctx.restore();
     }
 
-    // Center hub
+    // Glossy top highlight (arc reflection on upper half)
+    ctx.save();
+    const gloss = ctx.createLinearGradient(0, 0, 0, size);
+    gloss.addColorStop(0, "rgba(255,255,255,0.35)");
+    gloss.addColorStop(0.45, "rgba(255,255,255,0.05)");
+    gloss.addColorStop(0.5, "rgba(255,255,255,0)");
     ctx.beginPath();
-    ctx.arc(cx, cy, 28, 0, Math.PI * 2);
-    ctx.fillStyle = "#0f0f0f";
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,0.5)";
-    ctx.lineWidth = 3;
+    ctx.arc(cx, cy, radius - 1, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.fillStyle = gloss;
+    ctx.fillRect(0, 0, size, size);
+    ctx.restore();
+
+    // Outer rim (gold-ish glossy ring)
+    const rimGrad = ctx.createLinearGradient(0, 0, 0, size);
+    rimGrad.addColorStop(0, "#fde68a");
+    rimGrad.addColorStop(0.5, "#f59e0b");
+    rimGrad.addColorStop(1, "#92400e");
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius + 2, 0, Math.PI * 2);
+    ctx.strokeStyle = rimGrad;
+    ctx.lineWidth = 4;
     ctx.stroke();
+
+    // Center hub with glossy gradient
+    const hubGrad = ctx.createRadialGradient(cx - 6, cy - 6, 2, cx, cy, 32);
+    hubGrad.addColorStop(0, "#ffffff");
+    hubGrad.addColorStop(0.4, "#cbd5e1");
+    hubGrad.addColorStop(1, "#0f172a");
+    ctx.beginPath();
+    ctx.arc(cx, cy, 30, 0, Math.PI * 2);
+    ctx.fillStyle = hubGrad;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.6)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Inner hub dot
+    ctx.beginPath();
+    ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+    ctx.fillStyle = "#0f172a";
+    ctx.fill();
   }, [names]);
+
+  // Helper to lighten/darken hex colors
+  function shade(hex: string, percent: number): string {
+    const h = hex.replace("#", "");
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    const adj = (c: number) =>
+      Math.max(0, Math.min(255, Math.round(c + (percent > 0 ? (255 - c) * percent : c * percent))));
+    return `rgb(${adj(r)}, ${adj(g)}, ${adj(b)})`;
+  }
 
   const applyNames = () => {
     const arr = textArea
@@ -150,7 +202,25 @@ function WheelPage() {
   };
 
   return (
-    <main className="bg-aurora relative min-h-screen w-full px-5 py-10 sm:px-8 sm:py-14">
+    <main
+      className="relative min-h-screen w-full px-5 py-10 sm:px-8 sm:py-14"
+      style={{
+        backgroundImage: `url(${casinoBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      {/* Dark overlay for legibility */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(8,6,16,0.65) 0%, rgba(8,6,16,0.55) 50%, rgba(8,6,16,0.8) 100%)",
+          backdropFilter: "blur(2px)",
+        }}
+      />
       <div className="relative z-10 mx-auto max-w-5xl">
         <header className="mb-8 flex flex-col items-center text-center">
           <Link
@@ -168,6 +238,19 @@ function WheelPage() {
         <div className="grid gap-8 lg:grid-cols-[480px_1fr] lg:items-start justify-items-center">
           {/* Wheel */}
           <div className="relative" style={{ width: 480, height: 520 }}>
+            {/* Rim glow */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+              style={{
+                width: 540,
+                height: 540,
+                marginTop: 10,
+                background:
+                  "radial-gradient(circle, rgba(245,158,11,0.45) 0%, rgba(245,158,11,0.15) 40%, transparent 70%)",
+                filter: "blur(30px)",
+              }}
+            />
             {/* Pointer */}
             <div
               className="absolute left-1/2 -translate-x-1/2 z-20"
@@ -178,14 +261,16 @@ function WheelPage() {
                 style={{
                   width: 0,
                   height: 0,
-                  borderLeft: "18px solid transparent",
-                  borderRight: "18px solid transparent",
-                  borderTop: "30px solid #fff",
-                  filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.5))",
+                  borderLeft: "20px solid transparent",
+                  borderRight: "20px solid transparent",
+                  borderTop: "34px solid #fde68a",
+                  filter:
+                    "drop-shadow(0 0 12px rgba(245,158,11,0.9)) drop-shadow(0 4px 6px rgba(0,0,0,0.6))",
                 }}
               />
             </div>
             <div
+              className="relative"
               style={{
                 width: 480,
                 height: 480,
@@ -196,7 +281,7 @@ function WheelPage() {
                   : "none",
                 borderRadius: "9999px",
                 boxShadow:
-                  "0 30px 80px -20px rgba(0,0,0,0.8), 0 0 0 8px rgba(255,255,255,0.06), inset 0 0 0 2px rgba(255,255,255,0.15)",
+                  "0 40px 100px -20px rgba(0,0,0,0.9), 0 0 60px rgba(245,158,11,0.25), 0 0 0 6px rgba(255,255,255,0.08), 0 0 0 10px rgba(0,0,0,0.4), inset 0 0 0 2px rgba(255,255,255,0.2)",
               }}
             >
               <canvas ref={canvasRef} />
@@ -204,7 +289,10 @@ function WheelPage() {
           </div>
 
           {/* Controls */}
-          <div className="glass-card w-full max-w-md rounded-2xl p-6">
+          <div
+            className="glass-card w-full max-w-md rounded-2xl p-6"
+            style={{ backdropFilter: "blur(40px) saturate(200%)", WebkitBackdropFilter: "blur(40px) saturate(200%)" }}
+          >
             <button
               onClick={spin}
               disabled={spinning || names.length === 0}
