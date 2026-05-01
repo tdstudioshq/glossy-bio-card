@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import confetti from "canvas-confetti";
 import casinoBg from "@/assets/casino-bg.png";
 
 export const Route = createFileRoute("/wheel")({
@@ -220,7 +221,58 @@ function WheelPage() {
     window.setTimeout(() => {
       setSpinning(false);
       setWinner(names[winnerIndex]);
+      fireConfetti();
     }, 5200);
+  };
+
+  const fireConfetti = () => {
+    const gold = ["#fde68a", "#f59e0b", "#fbbf24", "#ffffff", "#facc15"];
+    const defaults = {
+      colors: gold,
+      ticks: 220,
+      gravity: 0.85,
+      scalar: 0.9,
+      disableForReducedMotion: true,
+    };
+    // Center burst
+    confetti({
+      ...defaults,
+      particleCount: 80,
+      spread: 70,
+      startVelocity: 38,
+      origin: { x: 0.5, y: 0.45 },
+    });
+    // Side cannons
+    setTimeout(() => {
+      confetti({
+        ...defaults,
+        particleCount: 50,
+        angle: 60,
+        spread: 60,
+        startVelocity: 45,
+        origin: { x: 0, y: 0.7 },
+      });
+      confetti({
+        ...defaults,
+        particleCount: 50,
+        angle: 120,
+        spread: 60,
+        startVelocity: 45,
+        origin: { x: 1, y: 0.7 },
+      });
+    }, 180);
+    // Gentle drift
+    setTimeout(() => {
+      confetti({
+        ...defaults,
+        particleCount: 40,
+        spread: 100,
+        startVelocity: 25,
+        gravity: 0.6,
+        scalar: 0.75,
+        origin: { x: 0.5, y: 0.3 },
+      });
+    }, 450);
   };
 
   return (
