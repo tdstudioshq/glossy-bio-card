@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Instagram, MessageCircle, Send, Mail, Sparkles } from "lucide-react";
+import { Instagram, MessageCircle, Send, Mail, Sparkles, Disc3 } from "lucide-react";
 import logo from "@/assets/td-studios-logo.png";
 
 export const Route = createFileRoute("/")({
@@ -26,6 +26,7 @@ type LinkItem = {
 };
 
 const links: LinkItem[] = [
+  { label: "Spin The Wheel", href: "/wheel", icon: Disc3 },
   { label: "Instagram", href: "https://www.instagram.com/tdstudiosco/", icon: Instagram },
   { label: "WhatsApp", href: "https://wa.me/19297528373", icon: MessageCircle },
   { label: "Telegram", href: "https://t.me/+19297528373", icon: Send },
